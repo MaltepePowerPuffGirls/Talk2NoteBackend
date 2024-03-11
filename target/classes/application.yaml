@@ -1,0 +1,26 @@
+
+spring:
+
+  application:
+    name: Talk2NoteBackend
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/talk2note}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DB_DLL:update}
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC+3
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
