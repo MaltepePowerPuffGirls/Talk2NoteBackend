@@ -1,7 +1,7 @@
 
 FROM openjdk:21-jdk
 
-RUN ["mvn", "clean", "install"]
+RUN ["mvn", "build"]
 
 ARG JAR_FILE=target/*.jar
 
