@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,41 +44,39 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("api/v1/user/**").hasAnyAuthority(Role.USER.name())
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors((cors) -> cors
+                        .configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("api/v1/user/**").hasAnyAuthority(Role.USER.name())
+                        .anyRequest().authenticated())
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout()
-                .logoutUrl("/api/v1/auth/logout")
-                .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    cookieService.setRefreshCookieNull();
-                    SecurityContextHolder.clearContext();
-                })
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "refresh-token")
-        ;
+                .logout((logout) -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            cookieService.setRefreshCookieNull();
+                            SecurityContextHolder.clearContext();
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID", "refresh-token"));
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins); // allow all origins
-        configuration.setAllowedMethods(allowedMethods); // allow specific HTTP methods
-        configuration.setAllowedHeaders(allowedHeaders); // allow all headers
-        configuration.setAllowCredentials(true); // allow credentials such as cookies, authorization headers
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedMethods(allowedMethods);
+        configuration.setAllowedHeaders(allowedHeaders);
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // apply CORS configuration to all endpoints
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
