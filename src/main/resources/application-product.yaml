@@ -4,3 +4,16 @@ spring:
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
     url: ${POSTGRES_URL}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DB_DLL:create}
+
+application:
+  security:
+    jwt:
+      secret-key: ${AUTH_SECRET}
+
+cors:
+  allowed-origins: >
+    https://talk2note-project.vercel.app

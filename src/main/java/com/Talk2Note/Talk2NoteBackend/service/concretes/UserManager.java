@@ -1,5 +1,6 @@
 package com.Talk2Note.Talk2NoteBackend.service.concretes;
 
+import com.Talk2Note.Talk2NoteBackend.api.dto.UserDto;
 import com.Talk2Note.Talk2NoteBackend.api.dto.UserEditRequest;
 import com.Talk2Note.Talk2NoteBackend.core.results.*;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +21,20 @@ public class UserManager implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public DataResult<List<User>> getAllUsers() {
+    public DataResult<List<UserDto>> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return new SuccessDataResult<>(users, "All user fetched");
+
+        List<UserDto> userDtos = users.stream()
+                .map(user -> UserDto.builder()
+                        .email(user.getEmail())
+                        .firstname(user.getFirstname())
+                        .lastname(user.getLastname())
+                        .about(user.getAbout())
+                        .role(user.getRole().name())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new SuccessDataResult<>(userDtos, "All user fetched");
     }
 
     @Override

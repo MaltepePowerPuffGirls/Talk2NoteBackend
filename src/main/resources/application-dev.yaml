@@ -4,3 +4,30 @@ spring:
     username: postgres
     password: 123456
     url: jdbc:postgresql://localhost:5432/talk2note
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DB_DLL:create}
+
+application:
+  security:
+    jwt:
+      secret-key: simplesecretkey0simplesecretkey0simplesecretkey0simplesecretkey0
+
+  cors:
+    allowed-origins: >
+      http://localhost:3000,
+      http://localhost:5173,
+      http://localhost:8080
+
+api:
+  version: 1.0.0
+  description: "This API provides endpoints for user management."
+  server:
+    url: "http://localhost:8080"
+  tos:
+    uri: "https://www.example.com/terms-of-service"
+
+springdoc:
+  api-docs:
+    enabled: true

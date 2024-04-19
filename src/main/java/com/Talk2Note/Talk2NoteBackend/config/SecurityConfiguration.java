@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,6 +44,20 @@ public class SecurityConfiguration {
     private List<String> allowedHeaders;
 
     @Bean
+    @Order(1)
+    @Profile("dev")
+    public SecurityFilterChain swaggerFilterChain(HttpSecurity http) throws Exception {
+        return http
+            .securityMatcher("/v3/**", "/bus/v3/**")
+            .authorizeHttpRequests((authorize) -> authorize
+                    .requestMatchers("/v3/api-docs/**").permitAll()
+                    .requestMatchers("/v3/swagger-ui/**").permitAll()
+                    .requestMatchers("/bus/v3/api-docs/**").permitAll())
+            .build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
