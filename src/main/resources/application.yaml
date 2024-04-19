@@ -8,8 +8,6 @@ spring:
     name: Talk2NoteBackend
 
   jpa:
-    hibernate:
-      ddl-auto: ${DB_DLL:update}
     show-sql: false
     properties:
       hibernate:
@@ -27,15 +25,11 @@ application:
 
   security:
     jwt:
-      secret-key: ${AUTH_SECRET:50655367566B5970337336763979244226452948404D635166546A576D5A7134743777217A25432A462D4A614E645267556B58703272357538782F413F4428472B4B6250655368566D5971337436763979244226452948404D635166546A576E5A7234753778217A25432A462D4A614E645267556B58703273357638792F423F}
       expiration: ${AUTH_EXP_SEC:43200000} # def: half a day => 12 * 60 * 60 * 1000
       refresh-token:
         expiration: ${REFRESH_EXP_SEC:302400000} # def: 7 days
 
   cors:
-    allowed-origins: >
-      http://localhost:3000,
-      http://localhost:5173
     allowed-methods: >
       GET,
       POST,
@@ -43,3 +37,9 @@ application:
       DELETE
     allowed-headers: >
       *
+
+springdoc:
+  swagger-ui:
+    path: /v3/api-docs
+  api-docs:
+    enabled: false
