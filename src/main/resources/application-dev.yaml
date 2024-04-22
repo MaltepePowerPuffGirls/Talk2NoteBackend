@@ -24,7 +24,7 @@ api:
   version: 1.0.0
   description: "This API provides endpoints for Talk2Note STT Note Taking Project"
   server:
-    url: "http://localhost:8080"
+    url: "http://localhost:${PORT:8080}"
   tos:
     uri: "https://www.example.com/terms-of-service"
 
