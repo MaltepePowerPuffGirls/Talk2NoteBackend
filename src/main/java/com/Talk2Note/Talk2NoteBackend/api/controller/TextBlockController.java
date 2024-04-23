@@ -1,7 +1,5 @@
 package com.Talk2Note.Talk2NoteBackend.api.controller;
 
-import com.Talk2Note.Talk2NoteBackend.api.dto.NoteResponse;
-import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockCreateRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockEditRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockResponse;
 import com.Talk2Note.Talk2NoteBackend.core.results.DataResult;
@@ -12,8 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/text-block")

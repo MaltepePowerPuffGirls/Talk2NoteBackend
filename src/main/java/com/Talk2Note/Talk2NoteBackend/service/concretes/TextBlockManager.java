@@ -1,22 +1,20 @@
 package com.Talk2Note.Talk2NoteBackend.service.concretes;
 
-import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockCreateRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockEditRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockResponse;
 import com.Talk2Note.Talk2NoteBackend.core.results.*;
 import com.Talk2Note.Talk2NoteBackend.core.utils.AuthUserUtil;
-import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
 import com.Talk2Note.Talk2NoteBackend.repository.TextBlockRepository;
-import com.Talk2Note.Talk2NoteBackend.service.abstracts.NoteService;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.TextBlockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.*;
+import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.generateTextBlockResponse;
+import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.generateTextBlockResponses;
 
 @Service
 @RequiredArgsConstructor

@@ -6,8 +6,6 @@ import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockResponse;
 import com.Talk2Note.Talk2NoteBackend.entity.Member;
 import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
-import com.Talk2Note.Talk2NoteBackend.service.concretes.MemberManager;
-import com.Talk2Note.Talk2NoteBackend.service.concretes.TextBlockManager;
 
 import java.util.List;
 import java.util.stream.Collectors;

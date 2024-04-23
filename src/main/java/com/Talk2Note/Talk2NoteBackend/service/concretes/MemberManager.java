@@ -4,19 +4,17 @@ import com.Talk2Note.Talk2NoteBackend.api.dto.MemberResponse;
 import com.Talk2Note.Talk2NoteBackend.core.results.*;
 import com.Talk2Note.Talk2NoteBackend.core.utils.AuthUserUtil;
 import com.Talk2Note.Talk2NoteBackend.entity.Member;
-import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
 import com.Talk2Note.Talk2NoteBackend.repository.MemberRepository;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.MemberService;
-import com.Talk2Note.Talk2NoteBackend.service.abstracts.NoteService;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.*;
+import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.generateMemberResponse;
+import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.generateMemberResponses;
 
 @Service
 @RequiredArgsConstructor

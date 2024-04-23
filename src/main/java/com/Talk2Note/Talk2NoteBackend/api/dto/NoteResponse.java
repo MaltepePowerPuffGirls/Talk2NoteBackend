@@ -2,8 +2,6 @@ package com.Talk2Note.Talk2NoteBackend.api.dto;
 
 import com.Talk2Note.Talk2NoteBackend.core.enums.NoteStatus;
 import com.Talk2Note.Talk2NoteBackend.core.enums.Priority;
-import com.Talk2Note.Talk2NoteBackend.entity.Member;
-import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

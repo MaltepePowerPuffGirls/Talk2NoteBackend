@@ -9,8 +9,6 @@ import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
 import com.Talk2Note.Talk2NoteBackend.repository.NoteRepository;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.NoteService;
-import com.Talk2Note.Talk2NoteBackend.service.abstracts.TextBlockService;
-import com.Talk2Note.Talk2NoteBackend.service.abstracts.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,6 @@ import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.*;
 @RequiredArgsConstructor
 public class NoteManager implements NoteService {
     private final NoteRepository noteRepository;
-    private final TextBlockService textBlockService;
     private final AuthUserUtil authUserUtil;
 
     @Override
