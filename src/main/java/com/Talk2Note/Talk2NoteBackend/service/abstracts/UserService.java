@@ -14,5 +14,5 @@ public interface UserService {
     Result saveUser(User user);
     DataResult<User> getUserByEmail(String email);
     Result modifyUser(UserEditRequest request);
-
+    DataResult<User> getUserById(int id);
 }

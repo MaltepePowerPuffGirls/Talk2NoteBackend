@@ -2,6 +2,7 @@ package com.Talk2Note.Talk2NoteBackend.entity;
 
 import com.Talk2Note.Talk2NoteBackend.core.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +14,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -44,9 +45,18 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "author")
+    @JsonManagedReference
+    private List<Note> notes;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Member> memberships;
+
     @Column(name = "created_at")
+    @Temporal(TemporalType.DATE)
     @CreationTimestamp
-    private Timestamp createdAt;
+    private Date createdAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
