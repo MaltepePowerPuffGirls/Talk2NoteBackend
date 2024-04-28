@@ -78,4 +78,12 @@ public class UserManager implements UserService {
         return new SuccessResult("User modified");
     }
 
+    @Override
+    public DataResult<User> getUserById(int id) {
+        User user = userRepository.findById(id).orElse(null);
+        if(user == null){
+           return new ErrorDataResult<>("User not found by id: " + id);
+        }
+        return new SuccessDataResult<>(user, "User found!");
+    }
 }
