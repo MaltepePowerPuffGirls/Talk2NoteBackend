@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/members")
+@RequestMapping("api/v1/member")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
 public class MemberController {
@@ -22,10 +22,10 @@ public class MemberController {
 
     @GetMapping("/{member-id}")
     @Operation(summary = "Get member", description = "Get a member by id")
-    public ResponseEntity<DataResult<MemberResponse>> getMemberById(
+    public ResponseEntity<DataResult<MemberResponse>> getMemberResponseById(
              @PathVariable(name = "member-id") int memberId
     ){
-        DataResult<MemberResponse> result = memberService.getMemberById(memberId);
+        DataResult<MemberResponse> result = memberService.getMemberResponseById(memberId);
         if(!result.isSuccess()){
             return ResponseEntity.badRequest().body(result);
         }

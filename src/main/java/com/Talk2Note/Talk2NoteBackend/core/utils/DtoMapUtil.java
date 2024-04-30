@@ -42,9 +42,10 @@ public class DtoMapUtil {
     public static NoteResponse generateNoteResponse(Note note){
         return NoteResponse.builder()
                 .id(note.getId())
-                .noteName(note.getNoteName())
+                .noteTitle(note.getNoteTitle())
                 .priority(note.getPriority())
                 .noteStatus(note.getNoteStatus())
+                .noteType(note.getNoteType())
                 .pinned(note.isPinned())
                 .description(note.getDescription())
                 .authorId(note.getAuthor().getId())

@@ -20,10 +20,10 @@ public class TextBlockController {
 
     @GetMapping("/{block-id}")
     @Operation(summary = "Get text block", description = "Get the text block by id")
-    public ResponseEntity<DataResult<TextBlockResponse>> getTextBlock(
+    public ResponseEntity<DataResult<TextBlockResponse>> getTextBlockResponseById(
             @PathVariable(name = "block-id") int blockId
     ){
-        DataResult<TextBlockResponse> result = textBlockService.getTextBlockById(blockId);
+        DataResult<TextBlockResponse> result = textBlockService.getTextBlockResponseById(blockId);
         if (!result.isSuccess()){
             return ResponseEntity.badRequest().body(result);
         }

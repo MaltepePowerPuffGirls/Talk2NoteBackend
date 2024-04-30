@@ -28,7 +28,7 @@ public class Member {
     @Column(name = "authority", length = 50)
     private String authority;
 
-    private boolean accepted;
+    private boolean accepted = false;
 
     @ManyToOne
     @JoinColumn(name = "note_id")
@@ -42,7 +42,7 @@ public class Member {
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)
     @CreationTimestamp
-    private Date invitedAt; // its same with createdAt
+    private Date invitedAt;
 
     @Column(name = "accepted_at")
     private Date acceptedAt;

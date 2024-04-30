@@ -24,8 +24,17 @@ public class MemberManager implements MemberService {
     private final AuthUserUtil authUserUtil;
 
     @Override
-    public DataResult<MemberResponse> getMemberById(int memberId) {
-        DataResult<Member> memberResult = getMember(memberId);
+    public DataResult<Member> getMemberById(int memberId){
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(member == null){
+            return new ErrorDataResult<>("Member not found by id: " + memberId);
+        }
+        return new SuccessDataResult<>(member,"Member found!");
+    }
+
+    @Override
+    public DataResult<MemberResponse> getMemberResponseById(int memberId) {
+        DataResult<Member> memberResult = getMemberById(memberId);
         if (!memberResult.isSuccess()){
             return new ErrorDataResult<>(memberResult.getMessage());
         }
@@ -64,7 +73,7 @@ public class MemberManager implements MemberService {
             return new ErrorResult("User not authenticated!");
         }
 
-        DataResult<Member> memberResult = getMember(memberId);
+        DataResult<Member> memberResult = getMemberById(memberId);
         if (!memberResult.isSuccess()){
             return new ErrorResult("TextBlock not found by id: "+ memberId);
         }
@@ -76,7 +85,8 @@ public class MemberManager implements MemberService {
         return deleteMember(member);
     }
 
-    private Result saveMember(Member member) {
+    @Override
+    public Result saveMember(Member member) {
         try {
             memberRepository.save(member);
         }catch (Exception e){
@@ -94,11 +104,4 @@ public class MemberManager implements MemberService {
         return new SuccessResult("Member deleted!");
     }
 
-    private DataResult<Member> getMember(int memberId){
-        Member member = memberRepository.findById(memberId).orElse(null);
-        if(member == null){
-            return new ErrorDataResult<>("Member not found by id: " + memberId);
-        }
-        return new SuccessDataResult<>(member,"Member found!");
-    }
 }
