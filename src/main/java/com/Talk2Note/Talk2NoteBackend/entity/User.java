@@ -14,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -47,11 +48,11 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "author")
     @JsonManagedReference
-    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private List<Member> memberships;
+    private List<Member> memberships = new ArrayList<>();
 
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)

@@ -14,12 +14,13 @@ public interface NoteService {
 
     Result addTextBlock(int noteId, TextBlockCreateRequest request);
 
-    DataResult<NoteResponse> getNoteById(int noteId);
+    DataResult<NoteResponse> getNoteResponseById(int noteId);
+
     DataResult<List<NoteResponse>> getAllNotes();
 
-    DataResult<List<Note>> getAllNotesByUser(User user);
+    DataResult<List<NoteResponse>> getAllNotesByUser(User user);
 
-    DataResult<List<Note>> getAllNotesByAuthUser();
+    DataResult<List<NoteResponse>> getAllNotesByAuthUser();
 
     DataResult<List<TextBlockResponse>> getNoteBlocks(int noteId);
 
@@ -27,11 +28,8 @@ public interface NoteService {
 
     Result editNote(int noteId, NoteEditRequest request);
 
+    Result updateNoteStatus(int noteId, NoteStatusUpdateRequest request);
+
     Result deleteNoteById(int noteId);
 
-    private Result saveNote(Note note) {return null;}
-    
-    private Result deleteNote(Note note){return  null;}
-
-    private DataResult<Note> getNote(int noteId){return null;}
 }

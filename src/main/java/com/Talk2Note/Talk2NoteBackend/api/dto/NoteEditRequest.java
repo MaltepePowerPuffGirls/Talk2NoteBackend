@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NoteEditRequest {
 
-    @JsonProperty("note_name")
-    private String noteName;
+    @JsonProperty("note_title")
+    private String noteTitle;
 
     private Priority priority;
 

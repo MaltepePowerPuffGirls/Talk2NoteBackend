@@ -3,7 +3,6 @@ package com.Talk2Note.Talk2NoteBackend.api.controller;
 import com.Talk2Note.Talk2NoteBackend.api.dto.*;
 import com.Talk2Note.Talk2NoteBackend.core.results.DataResult;
 import com.Talk2Note.Talk2NoteBackend.core.results.Result;
-import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.NoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/notes")
+@RequestMapping("api/v1/note")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
 public class NoteController {
@@ -22,8 +21,8 @@ public class NoteController {
 
     @GetMapping
     @Operation(summary = "Get all notes for authuser", description = "Get all notes for authenticated user")
-    public ResponseEntity<DataResult<List<Note>>> getAllNotesByAuthUser(){
-        DataResult<List<Note>> result = noteService.getAllNotesByAuthUser();
+    public ResponseEntity<DataResult<List<NoteResponse>>> getAllNotesByAuthUser(){
+        DataResult<List<NoteResponse>> result = noteService.getAllNotesByAuthUser();
         if (!result.isSuccess()){
             return ResponseEntity.badRequest().body(result);
         }
@@ -35,14 +34,14 @@ public class NoteController {
     public ResponseEntity<DataResult<NoteResponse>> getNoteById(
             @PathVariable(name = "note-id") int noteId
     ){
-        DataResult<NoteResponse> result = noteService.getNoteById(noteId);
+        DataResult<NoteResponse> result = noteService.getNoteResponseById(noteId);
         if(!result.isSuccess()){
             return ResponseEntity.badRequest().body(result);
         }
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{note-id}/blocks")
+    @GetMapping("/{note-id}/block")
     @Operation(summary = "Get note's blocks", description = "Get the specified note's textblocks")
     public ResponseEntity<DataResult<List<TextBlockResponse>>> getNoteBlocks(
             @PathVariable(name = "note-id") int noteId
@@ -54,7 +53,7 @@ public class NoteController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{note-id}/members")
+    @GetMapping("/{note-id}/member")
     @Operation(summary = "Get note's members", description = "Get the specified note's members")
     public ResponseEntity<DataResult<List<MemberResponse>>> getNoteMembers(
             @PathVariable(name = "note-id") int noteId
