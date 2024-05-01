@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TextBlockEditRequest {
 
-    @JsonProperty("row_number")
-    private int rowNumber;
-
     private boolean modified;
 
     @JsonProperty("raw_text")

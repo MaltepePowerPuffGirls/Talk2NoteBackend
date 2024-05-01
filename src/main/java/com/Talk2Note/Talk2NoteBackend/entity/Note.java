@@ -1,6 +1,7 @@
 package com.Talk2Note.Talk2NoteBackend.entity;
 
 import com.Talk2Note.Talk2NoteBackend.core.enums.NoteStatus;
+import com.Talk2Note.Talk2NoteBackend.core.enums.NoteType;
 import com.Talk2Note.Talk2NoteBackend.core.enums.Priority;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,8 +31,8 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "note_name", unique = true)
-    private String noteName;
+    @Column(name = "note_title", unique = true)
+    private String noteTitle;
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
@@ -39,7 +41,11 @@ public class Note {
     @Column(name = "note_status")
     private NoteStatus noteStatus;
 
-    private boolean pinned;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "note_type")
+    private NoteType noteType;
+
+    private boolean pinned = false;
 
     @Column(length = 1000)
     private String description;
@@ -51,11 +57,11 @@ public class Note {
 
     @OneToMany(mappedBy = "note")
     @JsonManagedReference
-    private List<TextBlock> textBlocks;
+    private List<TextBlock> textBlocks = new ArrayList<>();
 
     @OneToMany(mappedBy = "note")
     @JsonManagedReference
-    private List<Member> members;
+    private List<Member> members = new ArrayList<>();
 
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)

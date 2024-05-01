@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface MemberService {
 
-    DataResult<MemberResponse> getMemberById(int memberId);
+    DataResult<Member> getMemberById(int memberId);
+    DataResult<MemberResponse> getMemberResponseById(int memberId);
 
     DataResult<List<MemberResponse>> getAllMembers();
 
@@ -19,10 +20,5 @@ public interface MemberService {
 
     Result deleteMemberById(int memberId);
 
-    private Result saveMember(Member member){return null;}
-
-    private Result deleteMember(Member member){return null;}
-
-    private DataResult<Member> getMember(int memberId){return null;}
-
+    Result saveMember(Member member);
 }

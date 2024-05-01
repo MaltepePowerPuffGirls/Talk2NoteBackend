@@ -24,8 +24,17 @@ public class TextBlockManager implements TextBlockService {
     private final AuthUserUtil authUserUtil;
 
     @Override
-    public DataResult<TextBlockResponse> getTextBlockById(int textBlockId) {
-        DataResult<TextBlock> textBlockResult = getTextBlock(textBlockId);
+    public DataResult<TextBlock> getTextBlockById(int textBlockId) {
+        TextBlock textBlock = textBlockRepository.findById(textBlockId).orElse(null);
+        if(textBlock == null){
+            return new ErrorDataResult<>("TextBlock not found by id: " + textBlockId);
+        }
+        return new SuccessDataResult<>(textBlock,"TextBlock found!");
+    }
+
+    @Override
+    public DataResult<TextBlockResponse> getTextBlockResponseById(int textBlockId) {
+        DataResult<TextBlock> textBlockResult = getTextBlockById(textBlockId);
         if(!textBlockResult.isSuccess()){
             return new ErrorDataResult<>(textBlockResult.getMessage());
         }
@@ -46,20 +55,19 @@ public class TextBlockManager implements TextBlockService {
 
     @Override
     public Result editTextBlock(int textBlockId, TextBlockEditRequest request) {
-        DataResult<TextBlock> textBlocResult = getTextBlock(textBlockId);
+        DataResult<TextBlock> textBlocResult = getTextBlockById(textBlockId);
         if (!textBlocResult.isSuccess()){
             return new ErrorResult(textBlocResult.getMessage());
         }
 
         TextBlock textBlock = (TextBlock) textBlocResult.getData();
 
-        textBlock.setRowNumber(request.getRowNumber());
         textBlock.setModified(true);
         textBlock.setRawText(request.getRawText());
         textBlock.setMeaningfulText(request.getMeaningfulText());
         textBlock.setMdText(request.getMdText());
 
-        return saveTextBlock(textBlock);
+        return save(textBlock);
     }
 
     @Override
@@ -69,7 +77,7 @@ public class TextBlockManager implements TextBlockService {
             return new ErrorResult("User not authenticated!");
         }
 
-        DataResult<TextBlock> textBlockResult = getTextBlock(textBlockId);
+        DataResult<TextBlock> textBlockResult = getTextBlockById(textBlockId);
         if(!textBlockResult.isSuccess()){
             return new ErrorResult(textBlockResult.getMessage());
         }
@@ -97,15 +105,6 @@ public class TextBlockManager implements TextBlockService {
         return new SuccessResult("TextBlock saved");
     }
 
-    private Result saveTextBlock(TextBlock textBlock) {
-        try {
-            textBlockRepository.save(textBlock);
-        }catch (Exception e){
-            return new ErrorResult("Unexpected Error Occurred: " + e.getMessage());
-        }
-        return new SuccessResult("TextBlock saved!");
-    }
-
     private Result deleteTextBlock(TextBlock textBlock) {
         try{
             textBlockRepository.delete(textBlock);
@@ -115,11 +114,4 @@ public class TextBlockManager implements TextBlockService {
         return new SuccessResult("TextBlock deleted!");
     }
 
-    private DataResult<TextBlock> getTextBlock(int textBlockId) {
-        TextBlock textBlock = textBlockRepository.findById(textBlockId).orElse(null);
-        if(textBlock == null){
-            return new ErrorDataResult<>("TextBlock not found by id: " + textBlockId);
-        }
-        return new SuccessDataResult<>(textBlock,"TextBlock found!");
-    }
 }

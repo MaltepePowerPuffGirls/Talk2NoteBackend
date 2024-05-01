@@ -28,7 +28,7 @@ public class TextBlock {
     @Column(name = "row_number", nullable = false)
     private int rowNumber;
 
-    private boolean modified;
+    private boolean modified = false;
 
     @Column(name = "raw_text", length = 5000)
     private String rawText;

@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface TextBlockService {
 
-    DataResult<TextBlockResponse> getTextBlockById(int textBlockId);
+    DataResult<TextBlock> getTextBlockById(int textBlockId);
+    DataResult<TextBlockResponse> getTextBlockResponseById(int textBlockId);
 
     DataResult<List<TextBlockResponse>> getAllTextBlocks();
 
@@ -23,9 +24,4 @@ public interface TextBlockService {
 
     Result save(TextBlock textBlock);
 
-    private Result saveTextBlock(TextBlock textBlock){return null;}
-
-    private Result deleteTextBlock(TextBlock textBlock){return null;}
-
-    private DataResult<TextBlock> getTextBlock(int textBlockId){return null;}
 }
