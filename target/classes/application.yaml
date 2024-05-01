@@ -46,3 +46,15 @@ springdoc:
 
 server:
   port: ${PORT:8080}
+
+openai:
+  model: "gpt-3.5-turbo"
+  secret-key: ${OPENAI_API_KEY}
+  max-tokens: 75
+  route:
+    completion-url: "https://api.openai.com/v1/completions"
+
+  role:
+    description:
+      raw-to-meaningful: "As a 'raw-to-meaningful' role, this actor specializes in converting unstructured or raw text into coherent and meaningful sentences. It employs advanced natural language processing techniques to analyze and interpret the input text, extracting key information and structuring it into clear and understandable sentences. This role is ideal for tasks such as summarization, paraphrasing, or text generation where the goal is to transform raw data into actionable insights or readable content."
+      md-auto: "The 'md-auto' role excels in automatically generating Markdown-formatted text. It intelligently formats input text into Markdown syntax, handling headings, lists, links, and other Markdown elements seamlessly. This role is particularly useful for automating the creation of documentation, blog posts, or any content that requires Markdown formatting. By automating the Markdown conversion process, it saves time and effort while ensuring consistency and accuracy in the output."

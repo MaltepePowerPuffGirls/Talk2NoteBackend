@@ -4,6 +4,7 @@ import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockEditRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockResponse;
 import com.Talk2Note.Talk2NoteBackend.core.results.*;
 import com.Talk2Note.Talk2NoteBackend.core.utils.AuthUserUtil;
+import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
 import com.Talk2Note.Talk2NoteBackend.repository.TextBlockRepository;
@@ -78,6 +79,22 @@ public class TextBlockManager implements TextBlockService {
             return new ErrorResult("User not authorized for textblock deletion!");
         }
         return deleteTextBlock(textBlock);
+    }
+
+    @Override
+    public DataResult<List<TextBlock>> getAllTextBlockByNoteAscRow(Note note) {
+        List<TextBlock> textBlocks = textBlockRepository.getAllByNoteOrderByRowNumberAsc(note);
+        return new SuccessDataResult<>(textBlocks, "TextBlock found by Note ORDERED by RowNumber ASC");
+    }
+
+    @Override
+    public Result save(TextBlock textBlock) {
+        try {
+            textBlockRepository.save(textBlock);
+        } catch (Exception e) {
+            return new ErrorResult("UEO: " + e.getMessage());
+        }
+        return new SuccessResult("TextBlock saved");
     }
 
     private Result saveTextBlock(TextBlock textBlock) {

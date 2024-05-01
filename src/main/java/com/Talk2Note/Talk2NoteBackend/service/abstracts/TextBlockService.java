@@ -4,6 +4,7 @@ import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockEditRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockResponse;
 import com.Talk2Note.Talk2NoteBackend.core.results.DataResult;
 import com.Talk2Note.Talk2NoteBackend.core.results.Result;
+import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 
 import java.util.List;
@@ -17,6 +18,10 @@ public interface TextBlockService {
     Result editTextBlock(int textBlockId, TextBlockEditRequest request);
 
     Result deleteTextBlockById(int textBlockId);
+
+    DataResult<List<TextBlock>> getAllTextBlockByNoteAscRow(Note note);
+
+    Result save(TextBlock textBlock);
 
     private Result saveTextBlock(TextBlock textBlock){return null;}
 
