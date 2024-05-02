@@ -15,4 +15,6 @@ public interface TextBlockRepository extends JpaRepository<TextBlock, Integer> {
             """)
     List<TextBlock> findAllTextBlocksByNote(Note note);
 
+    List<TextBlock> getAllByNoteOrderByRowNumberAsc(Note note);
+
 }
