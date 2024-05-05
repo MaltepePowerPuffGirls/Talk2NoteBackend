@@ -57,13 +57,12 @@ public class OpenAIConnector {
     }
 
 
-    public Map<Integer, String> compose(Map<Integer, String> textByRow, OpenAIRoleType roleType) {
+    public String compose(String promptString, OpenAIRoleType roleType) {
 
         OpenAIRole selectedRole = this.openAIRoles.get(roleType);
         if (selectedRole == null) {
             return null;
         }
-        String promptString = generatePrompt(textByRow);
 
         HttpHeaders headers = generateDefaultHeaders();
         Map<String, Object> body = new HashMap<>();
@@ -95,7 +94,7 @@ public class OpenAIConnector {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.exchange(OPENAI_API_COMPLETION_URL, HttpMethod.POST, entity, String.class);
 
-        return convertGeneratedResponse(response.getBody());
+        return response.getBody();
     }
 
     private HttpHeaders generateDefaultHeaders() {
@@ -103,34 +102,6 @@ public class OpenAIConnector {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(OPEN_AI_SECRET_KEY);
         return headers;
-    }
-
-    private String generatePrompt(Map<Integer, String> content) {
-        // string -> <<1::text1##2::text2..>>
-        StringBuilder promptBuilder = new StringBuilder();
-        for (Map.Entry<Integer, String> entry : content.entrySet()) {
-            promptBuilder.append("<<").append(entry.getKey()).append("::").append(entry.getValue()).append(">>##");
-        }
-        // Remove the extra '##' at the end
-        promptBuilder.delete(promptBuilder.length() - 2, promptBuilder.length());
-        return promptBuilder.toString();
-    }
-
-    private Map<Integer, String> convertGeneratedResponse(String responseText) {
-        // <<1::text1##2::text2..>> -> string
-        Map<Integer, String> responseMap = new HashMap<>();
-        // Split the responseText by '##' to get individual prompts
-        String[] prompts = responseText.split("##");
-        for (String prompt : prompts) {
-            // Split each prompt by '::' to separate index and text
-            String[] parts = prompt.split("::");
-            if (parts.length == 2) {
-                int index = Integer.parseInt(parts[0].substring(2)); // Extract index from "<<index::text>>"
-                String text = parts[1].substring(0, parts[1].length() - 2); // Remove ">>" from text
-                responseMap.put(index, text);
-            }
-        }
-        return responseMap;
     }
 
 }

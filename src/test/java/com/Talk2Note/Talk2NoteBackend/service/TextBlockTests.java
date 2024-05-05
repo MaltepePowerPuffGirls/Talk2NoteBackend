@@ -5,6 +5,7 @@ import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockEditRequest;
 import com.Talk2Note.Talk2NoteBackend.api.dto.TextBlockResponse;
 import com.Talk2Note.Talk2NoteBackend.core.results.DataResult;
 import com.Talk2Note.Talk2NoteBackend.core.results.Result;
+import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.Talk2Note.Talk2NoteBackend.repository.TextBlockRepository;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.TextBlockService;
 import org.junit.Before;
@@ -37,7 +38,7 @@ public class TextBlockTests {
         int textBlockId = 1;
 
         // Call the method
-        DataResult<TextBlockResponse> result = textBlockService.getTextBlockById(textBlockId);
+        DataResult<TextBlock> result = textBlockService.getTextBlockById(textBlockId);
 
         // Verify the result
         assertTrue(result.isSuccess());
@@ -53,7 +54,6 @@ public class TextBlockTests {
 
         // Prepare a TextBlockEditRequest
         TextBlockEditRequest request = new TextBlockEditRequest();
-        request.setRowNumber(2);
         request.setRawText("Edited Raw Text");
         request.setMeaningfulText("Edited Meaningful Text");
         request.setMdText("Edited MD Text");

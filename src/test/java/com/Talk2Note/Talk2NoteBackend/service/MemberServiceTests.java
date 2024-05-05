@@ -59,7 +59,7 @@ public class MemberServiceTests {
     @Test
     public void MemberService_getMemberById_ReturnsMemberData() {
 
-        DataResult<MemberResponse> result = memberService.getMemberById(1);
+        DataResult<Member> result = memberService.getMemberById(1);
         assertTrue(result.isSuccess());
         assertEquals("Member fetched", result.getMessage());
         assertNotNull(result.getData());

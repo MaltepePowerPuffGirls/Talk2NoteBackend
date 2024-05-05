@@ -44,7 +44,7 @@ public class MemberRepositoryTests {
         member2 = Member.builder().user(user1).build();
         member3 = Member.builder().user(user2).build();
 
-        note = Note.builder().noteName("Test Note Title").build();
+        note = Note.builder().noteTitle("Test Note Title").build();
 
         member1.setNote(note);
         member2.setNote(note);

@@ -72,7 +72,7 @@ public class NoteManager implements NoteService {
                 .note(note)
                 .build();
 
-        Result result = textBlockService.saveTextBlock(textBlock);
+        Result result = textBlockService.save(textBlock);
         if (!result.isSuccess()){
             return new ErrorResult(result.getMessage());
         }
