@@ -67,9 +67,9 @@ public class NoteServiceTests {
 
         note = Note.builder()
                 .id(1)
-                .noteName("Edited test title")
+                .noteTitle("Edited test title")
                 .priority(Priority.HIGH)
-                .noteStatus(NoteStatus.STARTED)
+                .noteStatus(NoteStatus.RECORDING)
                 .pinned(true)
                 .description("Test Description")
                 .author(authUser)
@@ -91,7 +91,7 @@ public class NoteServiceTests {
         Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
 
         NoteCreateRequest request = new NoteCreateRequest();
-        request.setNoteName(note.getNoteName());
+        request.setNoteTitle(note.getNoteTitle());
         request.setPriority(note.getPriority());
         request.setDescription(note.getDescription());
 
@@ -107,7 +107,7 @@ public class NoteServiceTests {
 
         int noteId = 1;
 
-        DataResult<NoteResponse> result = noteService.getNoteById(noteId);
+        DataResult<NoteResponse> result = noteService.getNoteResponseById(noteId);
 
         assertTrue(result.isSuccess());
         assertEquals("Note fetched", result.getMessage());
@@ -147,9 +147,9 @@ public class NoteServiceTests {
     public void NoteManager_editNote_ReturnsSuccessResult() {
         int noteId = 1;
         NoteEditRequest request = new NoteEditRequest();
-        request.setNoteName("Edited test title");
+        request.setNoteTitle("Edited test title");
         request.setPriority(Priority.HIGH);
-        request.setNoteStatus(NoteStatus.STARTED);
+        request.setNoteStatus(NoteStatus.RECORDING);
         request.setPinned(true);
         request.setDescription("Edited test description");
 
@@ -166,7 +166,7 @@ public class NoteServiceTests {
     public void NoteManager_getAllNotesByAuthUser_ReturnsNotesForAuthenticatedUser() {
         Mockito.when(noteRepository.findAllNotesByUser(Mockito.any(User.class))).thenReturn(Collections.singletonList(note));
 
-        DataResult<List<Note>> result = noteService.getAllNotesByAuthUser();
+        DataResult<List<NoteResponse>> result = noteService.getAllNotesByAuthUser();
 
         assertTrue(result.isSuccess());
         assertEquals("All notes fetched for specified user!", result.getMessage());

@@ -38,9 +38,9 @@ public class NoteRepositoryTests {
         user2 = User.builder().email("user2@gmail.com").build();
 
         notes = new ArrayList<>();
-        notes.add(Note.builder().noteName("Note 1").author(user1).build());
-        notes.add(Note.builder().noteName("Note 2").author(user1).build());
-        notes.add(Note.builder().noteName("Note 3").author(user2).build());
+        notes.add(Note.builder().noteTitle("Note 1").author(user1).build());
+        notes.add(Note.builder().noteTitle("Note 2").author(user1).build());
+        notes.add(Note.builder().noteTitle("Note 3").author(user2).build());
 
         userRepository.save(user1);
         userRepository.save(user2);
