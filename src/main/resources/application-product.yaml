@@ -16,4 +16,4 @@ application:
 
 cors:
   allowed-origins: >
-    https://talk2note-project.vercel.app
+    https://talk2-note-frontend.vercel.app
