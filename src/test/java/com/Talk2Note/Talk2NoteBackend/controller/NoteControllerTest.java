@@ -2,6 +2,7 @@ package com.Talk2Note.Talk2NoteBackend.controller;
 
 import com.Talk2Note.Talk2NoteBackend.api.controller.NoteController;
 import com.Talk2Note.Talk2NoteBackend.api.dto.*;
+import com.Talk2Note.Talk2NoteBackend.config.JwtService;
 import com.Talk2Note.Talk2NoteBackend.core.enums.NoteStatus;
 import com.Talk2Note.Talk2NoteBackend.core.enums.Priority;
 import com.Talk2Note.Talk2NoteBackend.core.results.DataResult;
@@ -14,72 +15,64 @@ import com.Talk2Note.Talk2NoteBackend.entity.Member;
 import com.Talk2Note.Talk2NoteBackend.entity.Note;
 import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
-import com.Talk2Note.Talk2NoteBackend.repository.MemberRepository;
-import com.Talk2Note.Talk2NoteBackend.repository.NoteRepository;
-import com.Talk2Note.Talk2NoteBackend.repository.TextBlockRepository;
-import com.Talk2Note.Talk2NoteBackend.repository.UserRepository;
+import com.Talk2Note.Talk2NoteBackend.repository.*;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.NoteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(controllers = NoteController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
+@ComponentScan(basePackages = "com.Talk2Note.Talk2NoteBackend.config")
 public class NoteControllerTest {
 
     @Autowired
-    private NoteController noteController;
-
-    @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     private NoteService noteService;
-
     @MockBean
-    private NoteRepository noteRepository;
-
+    private AuthUserUtil authUserUtil;
     @MockBean
-    private TextBlockRepository textBlockRepository;
-
+    private JwtService jwtService;
     @MockBean
-    private MemberRepository memberRepository;
+    private TokenRepository tokenRepository;
 
     @MockBean
     private UserRepository userRepository;
-
     @MockBean
-    private AuthUserUtil authUserUtil;
+    private NoteRepository noteRepository;
+    @MockBean
+    private TextBlockRepository textBlockRepository;
+    @MockBean
+    private MemberRepository memberRepository;
 
     private User authUser;
+    private Note note;
     private TextBlock textBlock;
     private Member member;
-    private Note note;
-    private List<Note> notes;
-    private DataResult<List<NoteResponse>> result;
-    private NoteResponse noteResponse;
-    private TextBlockResponse textBlockResponse;
-    private MemberResponse memberResponse;
+    private String baseUri = "/api/v1/note";
 
     @Before
-    public void setup() {
-
+    public void setup(){
         authUser = User.builder()
                 .email("user1@gmail.com")
                 .password("test_hashed_password")
@@ -87,215 +80,205 @@ public class NoteControllerTest {
 
         textBlock = TextBlock.builder()
                 .rawText("Test raw text")
-                .meaningfulText("Test meaningful text")
+                .meaningfulText("Test meaningfull text")
                 .mdText("Test md text")
-                .build();
-
-        member = Member.builder()
-                .user(authUser)
                 .build();
 
         note = Note.builder()
                 .id(1)
-                .noteTitle("Edited test title")
+                .noteTitle("Test title")
                 .priority(Priority.HIGH)
                 .noteStatus(NoteStatus.RECORDING)
-                .pinned(true)
                 .description("Test Description")
                 .author(authUser)
                 .build();
 
+        member = Member.builder()
+                .note(note)
+                .user(authUser)
+                .build();
+
         note.setTextBlocks(List.of(textBlock));
-        note.setMembers(List.of(member));
         textBlock.setNote(note);
+        note.setMembers(List.of(member));
 
         userRepository.save(authUser);
         noteRepository.save(note);
         textBlockRepository.save(textBlock);
         memberRepository.save(member);
 
-        notes = List.of(note);
-
-        result = new SuccessDataResult<>(
-                DtoMapUtil.generateNoteResponses(notes),
-                "All notes fetched for specified user!"
-        );
-
-        noteResponse = DtoMapUtil.generateNoteResponse(note);
-        textBlockResponse = DtoMapUtil.generateTextBlockResponse(textBlock);
-        memberResponse = DtoMapUtil.generateMemberResponse(member);
-
         Mockito.when(authUserUtil.getAuthenticatedUser()).thenReturn(authUser);
     }
 
     @Test
-    public void NoteController_getAllNotesByAuthUser_ReturnsAuthUserNotes(){
-        Mockito.when(noteService.getAllNotesByAuthUser()).thenReturn(result);
+    public void NoteController_getAllNotesByAuthUser_ReturnsAuthUserNotes() throws Exception {
+        NoteResponse noteResponse = DtoMapUtil.generateNoteResponse(note);
+        DataResult<List<NoteResponse>> response = new SuccessDataResult<>(
+                List.of(noteResponse),"All notes fetched for specified user!");
 
-        ResponseEntity<DataResult<List<NoteResponse>>> responseEntity = noteController.getAllNotesByAuthUser();
+        Mockito.when(noteService.getAllNotesByAuthUser()).thenReturn(response);
 
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-        DataResult<List<NoteResponse>> dataResult = responseEntity.getBody();
-        assertNotNull(dataResult);
-        assertTrue(dataResult.isSuccess());
-
-        List<NoteResponse> notes = dataResult.getData();
-        assertNotNull(notes);
-        assertFalse(notes.isEmpty());
-        assertEquals(notes.size(), notes.size());
+        mockMvc.perform(get(baseUri)).andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(true),
+                jsonPath("$.message").value("All notes fetched for specified user!"),
+                jsonPath("$.data").exists(),
+                jsonPath("$.data").isNotEmpty()
+        );
     }
 
     @Test
-    public void NoteController_getNoteById_ReturnsNote() {
-        DataResult<NoteResponse> result = new SuccessDataResult<>(noteResponse, "Note fetched");
-
-        Mockito.when(noteService.getNoteResponseById(Mockito.anyInt())).thenReturn(result);
-
+    public void NoteController_getNoteById_ReturnsNoteResponse() throws Exception {
         int noteId = 1;
+        NoteResponse noteResponse = DtoMapUtil.generateNoteResponse(note);
+        DataResult<NoteResponse> response = new SuccessDataResult<>(noteResponse, "Note fetched");
 
-        ResponseEntity<DataResult<NoteResponse>> responseEntity = noteController.getNoteById(noteId);
+        Mockito.when(noteService.getNoteResponseById(Mockito.anyInt()))
+                .thenReturn(response);
 
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-        DataResult<NoteResponse> dataResult = responseEntity.getBody();
-        assertNotNull(dataResult);
-        assertTrue(dataResult.isSuccess());
-
-        NoteResponse noteResponse = dataResult.getData();
-        assertNotNull(noteResponse);
-        assertEquals(noteId, noteResponse.getId());
+        mockMvc.perform(get(baseUri + "/{note-id}", noteId)).andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(true),
+                jsonPath("$.message").value("Note fetched"),
+                jsonPath("$.data").exists(),
+                jsonPath("$.data").isNotEmpty(),
+                jsonPath("$.data.id").value(noteResponse.getId())
+        );
     }
 
     @Test
-    public void NoteController_getNoteBlocks_ReturnsTextBlocks(){
+    public void NoteController_getNoteBlocks_ReturnsNoteBlocks() throws Exception {
         int noteId = 1;
-        DataResult<List<TextBlockResponse>> result = new SuccessDataResult<>(
-                List.of(textBlockResponse),"All textblocks fetched for note: "+ noteId);
-
-        Mockito.when(noteService.getNoteBlocks(Mockito.anyInt())).thenReturn(result);
-
-        ResponseEntity<DataResult<List<TextBlockResponse>>> responseEntity = noteController.getNoteBlocks(noteId);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-        DataResult<List<TextBlockResponse>> dataResult = responseEntity.getBody();
-        assertNotNull(dataResult);
-        assertTrue(dataResult.isSuccess());
-
-        List<TextBlockResponse> textBlockResponses = dataResult.getData();
-        assertNotNull(textBlockResponses);
-    }
-
-    @Test
-    public void NoteController_getNoteMembers_ReturnsMembers(){
-        int noteId = 1;
-        DataResult<List<MemberResponse>> result = new SuccessDataResult<>(
-            List.of(memberResponse), "All members fetched for note: "+ noteId
+        TextBlockResponse textBlockResponse = DtoMapUtil.generateTextBlockResponse(textBlock);
+        DataResult<List<TextBlockResponse>> response = new SuccessDataResult<>(
+                List.of(textBlockResponse), "All textblocks fetched for note: "+ noteId
         );
 
-        Mockito.when(noteService.getNoteMembers(Mockito.anyInt())).thenReturn(result);
+        Mockito.when(noteService.getNoteBlocks(Mockito.anyInt())).thenReturn(response);
 
-        ResponseEntity<DataResult<List<MemberResponse>>> responseEntity = noteController.getNoteMembers(noteId);
+        mockMvc.perform(get(baseUri + "/{note-id}/block", noteId)).andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(true),
+                jsonPath("$.message").value("All textblocks fetched for note: "+ noteId),
+                jsonPath("$.data").exists(),
+                jsonPath("$.data").isNotEmpty(),
+                jsonPath("$.data").isArray(),
+                jsonPath("$.data[0].id").value(textBlockResponse.getId())
+        );
 
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-        DataResult<List<MemberResponse>> dataResult = responseEntity.getBody();
-        assertNotNull(dataResult);
-        assertTrue(dataResult.isSuccess());
-
-        List<MemberResponse> memberResponses = dataResult.getData();
-        assertNotNull(memberResponses);
     }
 
     @Test
-    public void NoteController_createNote_ReturnsSuccessResult(){
-        Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
-
-        NoteCreateRequest request = NoteCreateRequest.builder()
-                .noteTitle(note.getNoteTitle())
-                .priority(note.getPriority())
-                .description(note.getDescription())
-                .build();
-
-        ResponseEntity<Result> responseEntity = noteController.createNote(request);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-        Result result = responseEntity.getBody();
-        assertNotNull(result);
-        assertTrue(result.isSuccess());
-        assertEquals("Note saved!", result.getMessage());
-    }
-
-    @Test
-    public void NoteController_createTextBlock_ReturnsSuccessResult(){
-        Mockito.when(noteRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(note));
-        Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
-
+    public void NoteController_getNoteMembers_ReturnsNoteMembers() throws Exception {
         int noteId = 1;
-        TextBlockCreateRequest request = TextBlockCreateRequest.builder()
+        MemberResponse memberResponse = DtoMapUtil.generateMemberResponse(member);
+        DataResult<List<MemberResponse>> response = new SuccessDataResult<>(
+          List.of(memberResponse), "All members fetched for note: "+ noteId
+        );
+
+        Mockito.when(noteService.getNoteMembers(Mockito.anyInt())).thenReturn(response);
+
+        mockMvc.perform(get(baseUri + "/{note-id}/member", noteId)).andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(true),
+                jsonPath("$.message").value("All members fetched for note: "+ noteId),
+                jsonPath("$.data").exists(),
+                jsonPath("$.data").isNotEmpty(),
+                jsonPath("$.data").isArray(),
+                jsonPath("$.data[0].id").value(memberResponse.getId())
+        );
+    }
+
+    @Test
+    public void NoteController_createNote_ReturnsSuccessResult() throws Exception {
+
+        NoteCreateRequest noteCreateRequest = NoteCreateRequest.builder()
+                .noteTitle(note.getNoteTitle())
+                .description(note.getDescription())
+                .priority(note.getPriority())
+                .noteType(note.getNoteType())
+                .build();
+        Result result = new SuccessResult("Note saved!");
+
+        Mockito.when(noteService.createNote(noteCreateRequest)).thenReturn(result);
+
+        mockMvc.perform(post(baseUri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(noteCreateRequest)))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.success").value(true),
+                        jsonPath("$.message").value("Note saved!")
+                );
+    }
+
+    @Test
+    public void NoteController_createTextBlock_ReturnsSuccessResult() throws Exception {
+        int noteId = 1;
+        TextBlockCreateRequest textBlockCreateRequest = TextBlockCreateRequest.builder()
                 .rawText(textBlock.getRawText())
                 .meaningfulText(textBlock.getMeaningfulText())
                 .mdText(textBlock.getMdText())
                 .build();
 
-        ResponseEntity<Result> responseEntity = noteController.createTextBlock(noteId, request);
+        Result result = new SuccessResult("Note saved!");
 
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Mockito.when(noteService.addTextBlock(noteId, textBlockCreateRequest)).thenReturn(result);
 
-        Result result = responseEntity.getBody();
-        assertNotNull(result);
-        assertTrue(result.isSuccess());
-        assertEquals("Note saved!", result.getMessage());
+        mockMvc.perform(post(baseUri + "/{note-id}/block", noteId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(textBlockCreateRequest)))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.success").value(true),
+                        jsonPath("$.message").value("Note saved!")
+                );
     }
 
     @Test
-    public void NoteController_editNote_ReturnsSuccessResult(){
-        Mockito.when(noteRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(note));
-        Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
-
+    public void NoteController_editNote_ReturnsSuccessResult() throws Exception {
         int noteId = 1;
-        NoteEditRequest request = NoteEditRequest.builder()
-                .noteTitle("Edited test title")
-                .description("Edited test description")
-                .priority(Priority.HIGH)
-                .noteStatus(NoteStatus.RECORDING)
+        NoteEditRequest noteEditRequest = NoteEditRequest.builder()
+                .noteTitle(note.getNoteTitle())
+                .priority(note.getPriority())
+                .noteStatus(note.getNoteStatus())
                 .pinned(true)
+                .description(note.getDescription())
                 .build();
 
-        ResponseEntity<Result> responseEntity = noteController.editNote(noteId, request);
+        Result result = new SuccessResult("Note saved!");
 
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Mockito.when(noteService.editNote(noteId, noteEditRequest)).thenReturn(result);
 
-        Result result = responseEntity.getBody();
-        assertNotNull(result);
-        assertTrue(result.isSuccess());
-        assertEquals("Note saved!", result.getMessage());
+        mockMvc.perform(put(baseUri + "/{note-id}", noteId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(noteEditRequest)))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.success").value(true),
+                        jsonPath("$.message").value("Note saved!")
+                );
     }
 
     @Test
-    public void NoteController_deleteNote_ReturnsSuccessResult(){
-        Mockito.when(noteRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(note));
-        Mockito.when(noteRepository.existsById(Mockito.anyInt())).thenReturn(true);
-
+    public void NoteController_deleteNote_ReturnsSuccessResult() throws Exception {
         int noteId = 1;
+        Result result = new SuccessResult("Note deleted!");
 
-        ResponseEntity<Result> responseEntity = noteController.deleteNote(noteId);
+        Mockito.when(noteService.deleteNoteById(Mockito.anyInt())).thenReturn(result);
 
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-        Result result = responseEntity.getBody();
-        assertNotNull(result);
-        assertTrue(result.isSuccess());
-        assertEquals("Note deleted!", result.getMessage());
+        mockMvc.perform(delete(baseUri + "/{note-id}", noteId)).andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(true),
+                jsonPath("$.message").value("Note deleted!")
+        );
     }
 }
