@@ -5,10 +5,7 @@ import com.Talk2Note.Talk2NoteBackend.api.dto.*;
 import com.Talk2Note.Talk2NoteBackend.config.JwtService;
 import com.Talk2Note.Talk2NoteBackend.core.enums.NoteStatus;
 import com.Talk2Note.Talk2NoteBackend.core.enums.Priority;
-import com.Talk2Note.Talk2NoteBackend.core.results.DataResult;
-import com.Talk2Note.Talk2NoteBackend.core.results.Result;
-import com.Talk2Note.Talk2NoteBackend.core.results.SuccessDataResult;
-import com.Talk2Note.Talk2NoteBackend.core.results.SuccessResult;
+import com.Talk2Note.Talk2NoteBackend.core.results.*;
 import com.Talk2Note.Talk2NoteBackend.core.utils.AuthUserUtil;
 import com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil;
 import com.Talk2Note.Talk2NoteBackend.entity.Member;
@@ -281,4 +278,143 @@ public class NoteControllerTest {
                 jsonPath("$.message").value("Note deleted!")
         );
     }
+
+    @Test
+    public void NoteController_getAllNotesByAuthUser_ReturnsBadRequest() throws Exception {
+        DataResult<List<NoteResponse>> response = new ErrorDataResult<>("User not authorized!");
+
+        Mockito.when(noteService.getAllNotesByAuthUser()).thenReturn(response);
+
+        mockMvc.perform(get(baseUri)).andExpectAll(
+                status().isBadRequest(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(false),
+                jsonPath("$.message").value("User not authorized!")
+        );
+    }
+
+    @Test
+    public void NoteController_getNoteById_ReturnsNotFound() throws Exception {
+        int invalidNoteId = 999999999;
+        DataResult<NoteResponse> response = new ErrorDataResult<>("Note not found by id: " + invalidNoteId);
+
+        Mockito.when(noteService.getNoteResponseById(invalidNoteId)).thenReturn(response);
+
+        mockMvc.perform(get(baseUri + "/{note-id}", invalidNoteId)).andExpectAll(
+                status().isBadRequest(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(false),
+                jsonPath("$.message").value("Note not found by id: " + invalidNoteId)
+        );
+
+    }
+
+    @Test
+    public void NoteController_getNoteBlocks_ReturnsBadRequest_ForInvalidNoteId() throws Exception {
+        int invalidNoteId = 999999999;
+        DataResult<List<TextBlockResponse>> response = new ErrorDataResult<>("Note not found by id: " + invalidNoteId);
+
+        Mockito.when(noteService.getNoteBlocks(invalidNoteId)).thenReturn(response);
+
+        mockMvc.perform(get(baseUri + "/{note-id}/block", invalidNoteId)).andExpectAll(
+                status().isBadRequest(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(false),
+                jsonPath("$.message").value("Note not found by id: " + invalidNoteId)
+        );
+
+    }
+
+    @Test
+    public void NoteController_getNoteMembers_ReturnsBadRequest_ForInvalidNoteId() throws Exception {
+        int invalidNoteId = 999999999;
+        DataResult<List<MemberResponse>> response = new ErrorDataResult<>("Note not found by id: " + invalidNoteId);
+
+        Mockito.when(noteService.getNoteMembers(invalidNoteId)).thenReturn(response);
+
+        mockMvc.perform(get(baseUri + "/{note-id}/member", invalidNoteId)).andExpectAll(
+                status().isBadRequest(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(false),
+                jsonPath("$.message").value("Note not found by id: " + invalidNoteId)
+        );
+
+    }
+
+    @Test
+    public void NoteController_createNote_ReturnsBadRequest_ForInvalidInput() throws Exception {
+        NoteCreateRequest invalidRequest = new NoteCreateRequest();
+
+        Result result = new ErrorResult("Invalid note data");
+
+        Mockito.when(noteService.createNote(invalidRequest)).thenReturn(result);
+
+        mockMvc.perform(post(baseUri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpectAll(
+                        status().isBadRequest(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.success").value(false),
+                        jsonPath("$.message").value("Invalid note data")
+                );
+    }
+
+    @Test
+    public void NoteController_createTextBlock_ReturnsBadRequest_ForInvalidInput() throws Exception {
+        int noteId = 1;
+        TextBlockCreateRequest invalidRequest = new TextBlockCreateRequest();
+
+        Result result = new ErrorResult("Invalid text block data");
+
+        Mockito.when(noteService.addTextBlock(noteId, invalidRequest)).thenReturn(result);
+
+        mockMvc.perform(post(baseUri + "/{note-id}/block", noteId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpectAll(
+                        status().isBadRequest(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.success").value(false),
+                        jsonPath("$.message").value("Invalid text block data")
+                );
+
+    }
+
+    @Test
+    public void NoteController_editNote_ReturnsBadRequest_ForInvalidInput() throws Exception {
+        int noteId = 1;
+        NoteEditRequest invalidRequest = new NoteEditRequest();
+
+        Result result = new ErrorResult("Invalid note data");
+
+        Mockito.when(noteService.editNote(noteId, invalidRequest)).thenReturn(result);
+
+        mockMvc.perform(put(baseUri + "/{note-id}", noteId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpectAll(
+                        status().isBadRequest(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.success").value(false),
+                        jsonPath("$.message").value("Invalid note data")
+                );
+    }
+
+    @Test
+    public void NoteController_deleteNote_ReturnsBadRequest_ForInvalidNoteId() throws Exception {
+        int invalidNoteId = 999999999;
+        Result result = new ErrorResult("Note not found by id: " + invalidNoteId);
+
+        Mockito.when(noteService.deleteNoteById(invalidNoteId)).thenReturn(result);
+
+        mockMvc.perform(delete(baseUri + "/{note-id}", invalidNoteId)).andExpectAll(
+                status().isBadRequest(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("$.success").value(false),
+                jsonPath("$.message").value("Note not found by id: " + invalidNoteId)
+        );
+
+    }
+
 }
