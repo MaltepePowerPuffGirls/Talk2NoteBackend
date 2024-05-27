@@ -18,9 +18,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(
-        connection = EmbeddedDatabaseConnection.H2,
-        replace = AutoConfigureTestDatabase.Replace.NONE)
 public class NoteRepositoryTests {
 
     @Autowired

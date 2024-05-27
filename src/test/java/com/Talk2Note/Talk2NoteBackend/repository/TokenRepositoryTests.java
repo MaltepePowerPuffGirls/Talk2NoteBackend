@@ -20,9 +20,6 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(
-        connection = EmbeddedDatabaseConnection.H2,
-        replace = AutoConfigureTestDatabase.Replace.NONE)
 public class TokenRepositoryTests {
 
     @Autowired

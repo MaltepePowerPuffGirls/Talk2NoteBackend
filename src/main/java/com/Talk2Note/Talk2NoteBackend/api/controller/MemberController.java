@@ -32,6 +32,8 @@ public class MemberController {
         return ResponseEntity.ok(result);
     }
 
+    /*
+    url şeması üstteki ile çakışıyor!
     @GetMapping("/{user-id}")
     @Operation(summary = "Get members for user", description = "Get members for specified userId")
     public ResponseEntity<DataResult<List<MemberResponse>>> getAllMembersByUserId(
@@ -43,6 +45,7 @@ public class MemberController {
         }
         return ResponseEntity.ok(result);
     }
+    */
 
     @DeleteMapping("/{member-id}")
     @Operation(summary = "Delete member", description = "Delete member by id")
