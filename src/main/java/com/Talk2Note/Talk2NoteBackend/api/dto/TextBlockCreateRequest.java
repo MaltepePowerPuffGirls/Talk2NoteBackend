@@ -17,9 +17,6 @@ public class TextBlockCreateRequest {
     @JsonProperty("raw_text")
     private String rawText;
 
-    @JsonProperty("meaningful_text")
-    private String meaningfulText;
-
     @JsonProperty("md_text")
     private String mdText;
 

@@ -55,11 +55,11 @@ public class Note {
     @JsonBackReference
     private User author;
 
-    @OneToMany(mappedBy = "note")
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<TextBlock> textBlocks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "note")
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Member> members = new ArrayList<>();
 
@@ -72,4 +72,7 @@ public class Note {
     @Temporal(TemporalType.DATE)
     @UpdateTimestamp
     private Date modifiedAt;
+
+    @Column(name = "markdown_text", length = 50000)
+    private String markdownText;
 }

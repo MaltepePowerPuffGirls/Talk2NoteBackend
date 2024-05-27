@@ -48,4 +48,7 @@ public class NoteResponse {
 
     @JsonProperty("modified_at")
     private Date modifiedAt;
+
+    @JsonProperty("markdown_text")
+    private String markdownText;
 }

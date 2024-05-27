@@ -32,7 +32,6 @@ public class DtoMapUtil {
                 .modified(textBlock.isModified())
                 .rawText(textBlock.getRawText())
                 .meaningfulText(textBlock.getMeaningfulText())
-                .mdText(textBlock.getMdText())
                 .noteId(textBlock.getNote().getId())
                 .createdAt(textBlock.getCreatedAt())
                 .modifiedAt(textBlock.getModifiedAt())
@@ -53,6 +52,7 @@ public class DtoMapUtil {
                 .members(generateMemberResponses(note.getMembers()))
                 .createdAt(note.getCreatedAt())
                 .modifiedAt(note.getModifiedAt())
+                .markdownText(note.getMarkdownText())
                 .build();
     }
 

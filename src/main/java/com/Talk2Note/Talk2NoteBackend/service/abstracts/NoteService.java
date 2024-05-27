@@ -31,5 +31,6 @@ public interface NoteService {
     Result updateNoteStatus(int noteId, NoteStatusUpdateRequest request);
 
     Result deleteNoteById(int noteId);
+    void updateNote(Note note);
 
 }
