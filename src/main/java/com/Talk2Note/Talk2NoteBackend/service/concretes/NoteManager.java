@@ -9,12 +9,14 @@ import com.Talk2Note.Talk2NoteBackend.entity.TextBlock;
 import com.Talk2Note.Talk2NoteBackend.entity.User;
 import com.Talk2Note.Talk2NoteBackend.repository.NoteRepository;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.NoteService;
+import com.Talk2Note.Talk2NoteBackend.service.abstracts.OpenAIService;
 import com.Talk2Note.Talk2NoteBackend.service.abstracts.TextBlockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.Talk2Note.Talk2NoteBackend.core.utils.DtoMapUtil.*;
 
@@ -24,6 +26,7 @@ public class NoteManager implements NoteService {
     private final NoteRepository noteRepository;
     private final TextBlockService textBlockService;
     private final AuthUserUtil authUserUtil;
+    private final OpenAIService openAIService;
 
     @Override
     public Result createNote(NoteCreateRequest request) {
@@ -35,7 +38,7 @@ public class NoteManager implements NoteService {
         Note note = Note.builder()
                 .noteTitle(request.getNoteTitle())
                 .priority(request.getPriority())
-                .noteStatus(NoteStatus.RECORDING)
+                .noteStatus(NoteStatus.STOPPED)
                 .noteType(request.getNoteType())
                 .description(request.getDescription())
                 .author(authUser)
@@ -49,7 +52,7 @@ public class NoteManager implements NoteService {
         if(!noteResult.isSuccess()){
             return new ErrorDataResult<>(noteResult.getMessage());
         }
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
 
         if(!note.getNoteStatus().equals(NoteStatus.RECORDING)){
             return new ErrorResult("Note status should be RECORDING, provided: "+
@@ -67,8 +70,6 @@ public class NoteManager implements NoteService {
         TextBlock textBlock = TextBlock.builder()
                 .rowNumber(lastRowNumber + 1)
                 .rawText(request.getRawText())
-                .meaningfulText(request.getMeaningfulText())
-                .mdText(request.getMdText())
                 .note(note)
                 .build();
 
@@ -85,7 +86,7 @@ public class NoteManager implements NoteService {
         if(!noteResult.isSuccess()){
             return new ErrorDataResult<>(noteResult.getMessage());
         }
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
         NoteResponse response = generateNoteResponse(note);
 
         return new SuccessDataResult<>(response, "Note fetched");
@@ -122,7 +123,7 @@ public class NoteManager implements NoteService {
         if(!noteResult.isSuccess()){
             return new ErrorDataResult<>(noteResult.getMessage());
         }
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
 
         List<TextBlockResponse> response = generateTextBlockResponses(note.getTextBlocks());
         return new SuccessDataResult<>(response, "All textblocks fetched for note: "+ noteId);
@@ -134,7 +135,7 @@ public class NoteManager implements NoteService {
         if(!noteResult.isSuccess()){
             return new ErrorDataResult<>(noteResult.getMessage());
         }
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
 
         List<MemberResponse> response = generateMemberResponses(note.getMembers());
         return new SuccessDataResult<>(response, "All members fetched for note: "+ noteId);
@@ -147,7 +148,14 @@ public class NoteManager implements NoteService {
             return new ErrorResult(noteResult.getMessage());
         }
 
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
+
+        if (note.getNoteStatus() != request.getNoteStatus()
+                && note.getNoteStatus() == NoteStatus.STOPPED
+                && note.getTextBlocks().size() > 0
+        ) {
+            CompletableFuture.runAsync(() -> updateNote(note));
+        }
 
         note.setNoteTitle(request.getNoteTitle());
         note.setPriority(request.getPriority());
@@ -165,7 +173,7 @@ public class NoteManager implements NoteService {
             return new ErrorResult(noteResult.getMessage());
         }
 
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
 
         if(note.getNoteStatus().equals(request.getNoteStatus())){
             return new SuccessResult("Note status is already "+ request.getNoteStatus().name());
@@ -191,7 +199,7 @@ public class NoteManager implements NoteService {
         if (!noteResult.isSuccess()){
             return new ErrorResult(noteResult.getMessage());
         }
-        Note note = (Note) noteResult.getData();
+        Note note = noteResult.getData();
 
         if(note.getAuthor() != authUser){
             return new ErrorResult("User not authorized for note deletion!");
@@ -223,5 +231,20 @@ public class NoteManager implements NoteService {
             return new ErrorDataResult<>("Note not found by id: " + noteId);
         }
         return new SuccessDataResult<>(note, "Note found!");
+    }
+
+    @Override
+    public void updateNote(Note note) {
+
+        Result convertMeaningfulResult =  openAIService.rawToMeaningful(note);
+        if (!convertMeaningfulResult.isSuccess()) {
+            System.out.println("UPDATE NOTE ERROR [meaningful]: " + convertMeaningfulResult.getMessage());
+        }
+
+        Result convertMdResult = openAIService.MdAuto(note);
+        if (!convertMdResult.isSuccess()) {
+            System.out.println("UPDATE NOTE ERROR [markdown]: " + convertMeaningfulResult.getMessage());
+        }
+
     }
 }

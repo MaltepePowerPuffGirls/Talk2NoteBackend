@@ -36,9 +36,6 @@ public class TextBlock {
     @Column(name = "meaningful_text", length = 7500)
     private String meaningfulText;
 
-    @Column(name = "md_text", length = 10000)
-    private String mdText;
-
     @ManyToOne
     @JoinColumn(name = "note_id")
     @JsonBackReference

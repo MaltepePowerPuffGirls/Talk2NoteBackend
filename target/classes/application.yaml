@@ -48,13 +48,17 @@ server:
   port: ${PORT:8080}
 
 openai:
-  model: "gpt-3.5-turbo"
+  model: "gpt-4-turbo"
   secret-key: ${OPENAI_API_KEY}
   max-tokens: 75
   route:
-    completion-url: "https://api.openai.com/v1/completions"
+    completion-url: "https://api.openai.com/v1/chat/completions"
 
-  role:
-    description:
-      raw-to-meaningful: "As a 'raw-to-meaningful' role, this actor specializes in converting unstructured or raw text into coherent and meaningful sentences. It employs advanced natural language processing techniques to analyze and interpret the input text, extracting key information and structuring it into clear and understandable sentences. This role is ideal for tasks such as summarization, paraphrasing, or text generation where the goal is to transform raw data into actionable insights or readable content."
-      md-auto: "The 'md-auto' role excels in automatically generating Markdown-formatted text. It intelligently formats input text into Markdown syntax, handling headings, lists, links, and other Markdown elements seamlessly. This role is particularly useful for automating the creation of documentation, blog posts, or any content that requires Markdown formatting. By automating the Markdown conversion process, it saves time and effort while ensuring consistency and accuracy in the output."
+  roles:
+    raw-to-meaningful:
+      description: "I will understand the topic and general meaning of given input and make the following job based on the meaning and topic of input. I will correct spelling, word choice, and meaning errors without changing the overall meaning of the text. I will ensure the text retains its original meaning and correct any ambiguities or unclear expressions. Additionally, I will pay attention to punctuation and capitalization errors, ensuring they are corrected while preserving the original context and structure of the text. I will return the text in the same format and order as the input."
+      temperature: 0.3f
+
+    md-auto:
+      description: "I am a note taker in Md format and a master at automatically generating Markdown formatted text. Markdown will be my go-to tool for simplifying document formatting, enabling both human readability and machine parsing. My task is to convert text into a note in Markdown file format, using rich Markdown elements (headings, lists, links, etc.). During the Markdown conversion, I use appropriate formatting elements, preserving the structural integrity of the text. The lightweight syntax will use plain text characters to specify various formatting elements including bold, italics and code blocks, making it an ideal choice for creating documents, README files and formatting messages on platforms like Reddit and Discord. Markdown is a valuable tool for me in efficient document creation and sharing workflows. Using Markdown, I will make your documents clear, organized and easy to share."
+      temperature: 0.1f

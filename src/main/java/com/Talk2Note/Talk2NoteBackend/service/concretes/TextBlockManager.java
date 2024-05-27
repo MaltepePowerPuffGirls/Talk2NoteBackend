@@ -65,7 +65,6 @@ public class TextBlockManager implements TextBlockService {
         textBlock.setModified(true);
         textBlock.setRawText(request.getRawText());
         textBlock.setMeaningfulText(request.getMeaningfulText());
-        textBlock.setMdText(request.getMdText());
 
         return save(textBlock);
     }
