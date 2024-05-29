@@ -62,7 +62,6 @@ public class NoteServiceTests {
         textBlock = TextBlock.builder()
                 .rawText("Test raw text")
                 .meaningfulText("Test meaningful text")
-                .mdText("Test md text")
                 .build();
 
         note = Note.builder()
@@ -131,8 +130,6 @@ public class NoteServiceTests {
         int noteId = 1;
         TextBlockCreateRequest request = new TextBlockCreateRequest();
         request.setRawText(textBlock.getRawText());
-        request.setMeaningfulText(textBlock.getMeaningfulText());
-        request.setMdText(textBlock.getMdText());
 
         Mockito.when(noteRepository.findById(noteId)).thenReturn(Optional.of(note));
         Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);

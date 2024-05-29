@@ -78,7 +78,6 @@ public class NoteControllerTest {
         textBlock = TextBlock.builder()
                 .rawText("Test raw text")
                 .meaningfulText("Test meaningfull text")
-                .mdText("Test md text")
                 .build();
 
         note = Note.builder()
@@ -219,8 +218,6 @@ public class NoteControllerTest {
         int noteId = 1;
         TextBlockCreateRequest textBlockCreateRequest = TextBlockCreateRequest.builder()
                 .rawText(textBlock.getRawText())
-                .meaningfulText(textBlock.getMeaningfulText())
-                .mdText(textBlock.getMdText())
                 .build();
 
         Result result = new SuccessResult("Note saved!");

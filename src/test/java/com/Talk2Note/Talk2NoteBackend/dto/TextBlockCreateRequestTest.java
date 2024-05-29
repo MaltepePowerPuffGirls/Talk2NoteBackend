@@ -42,7 +42,6 @@ public class TextBlockCreateRequestTest {
 
         assertThat(textBlockCreateRequest.isModified()).isEqualTo(false);
         assertThat(textBlockCreateRequest.getRawText()).isEqualTo("raw text");
-        assertThat(textBlockCreateRequest.getMeaningfulText()).isEqualTo("meaningful text");
         assertThat(textBlockCreateRequest.getMdText()).isEqualTo("md text");
     }
 

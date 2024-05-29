@@ -54,7 +54,6 @@ public class TextBlockRepositoryTest {
                 .rowNumber(1)
                 .rawText("raw text")
                 .meaningfulText("meaningful text")
-                .mdText("md text")
                 .note(note)
                 .build();
 
@@ -62,7 +61,6 @@ public class TextBlockRepositoryTest {
                 .rowNumber(2)
                 .rawText("raw text")
                 .meaningfulText("meaningful text")
-                .mdText("md text")
                 .note(note)
                 .build();
 
@@ -86,7 +84,6 @@ public class TextBlockRepositoryTest {
         assertEquals(textBlock1.getRowNumber(), block.getRowNumber());
         assertEquals(textBlock1.getRawText(), block.getRawText());
         assertEquals(textBlock1.getMeaningfulText(), block.getMeaningfulText());
-        assertEquals(textBlock1.getMdText(), block.getMdText());
     }
 
     @Test

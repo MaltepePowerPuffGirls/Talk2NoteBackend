@@ -23,7 +23,7 @@ FROM amazoncorretto:17
 WORKDIR /app
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/target/Talk2NoteBackend-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/Talk2NoteBackend-0.0.1-SNAPSHOT.jar /app/app.jar
 
 # Expose the application port (replace with your application's port)
 EXPOSE 8080
@@ -32,4 +32,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://localhost:8080/actuator/health || exit 1
 
 # Run the application
-ENTRYPOINT ["java", "-Xmx2048M", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-Xmx2048M", "-jar", "/app/app.jar"]
